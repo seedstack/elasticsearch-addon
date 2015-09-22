@@ -18,10 +18,12 @@
         <version>2.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>seed-persistence-support-elasticsearch</artifactId>
+    <artifactId>seed-elasticsearch</artifactId>
 
     <properties>
         <seed.version>2.1.0-M1-SNAPSHOT</seed.version>
+        <compatibility.groupId>org.seedstack.seed</compatibility.groupId>
+        <compatibility.artifactId>seed-persistence-support-elasticsearch</compatibility.artifactId>
         <compatibility.version>2.0.0</compatibility.version>
     </properties>
 
