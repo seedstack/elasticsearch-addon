@@ -98,4 +98,24 @@
         <developerConnection>scm:git:git@github.com:seedstack/elasticsearch-addon.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
+
+    <profiles>
+        <profile>
+            <id>staging</id>
+            <repositories>
+                <repository>
+                    <id>sonatype-nexus-staging</id>
+                    <name>Sonatype Nexus Staging</name>
+                    <url>https://oss.sonatype.org/content/groups/staging</url>
+                </repository>
+            </repositories>
+            <pluginRepositories>
+                <pluginRepository>
+                    <id>sonatype-nexus-staging</id>
+                    <name>Sonatype Nexus Staging</name>
+                    <url>https://oss.sonatype.org/content/groups/staging</url>
+                </pluginRepository>
+            </pluginRepositories>
+        </profile>
+    </profiles>
 </project>
