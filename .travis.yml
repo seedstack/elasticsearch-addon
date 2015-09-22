@@ -16,7 +16,7 @@ cache:
 install: /bin/true
 
 script:
-  - mvn -q -B -U -Pstaging,javadoc,compatibility-check install jacoco:report
+  - mvn -q -B -U -Pstaging,javadoc,compatibility install jacoco:report
   - mvn -q -B coveralls:report -DrepoToken=$COVERALLS_TOKEN
 
 after_success:

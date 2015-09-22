@@ -22,7 +22,7 @@
 
     <properties>
         <seed.version>2.1.0-M1-SNAPSHOT</seed.version>
-        <compatibility-check.version>2.0.0</compatibility-check.version>
+        <compatibility.version>2.0.0</compatibility.version>
     </properties>
 
     <build>
