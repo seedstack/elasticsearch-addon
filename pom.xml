@@ -19,6 +19,7 @@
     </parent>
 
     <artifactId>seed-elasticsearch</artifactId>
+    <version>2.0.1-SNAPSHOT</version>
 
     <properties>
         <seed.version>2.1.0-M1-SNAPSHOT</seed.version>
