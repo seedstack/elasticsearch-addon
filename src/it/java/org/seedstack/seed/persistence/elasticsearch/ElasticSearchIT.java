@@ -16,10 +16,8 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.json.JSONException;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.seedstack.seed.core.api.SeedException;
 import org.seedstack.seed.it.AbstractSeedIT;
-import org.seedstack.seed.it.internal.categories.NotSelfContained;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import javax.inject.Inject;
@@ -29,7 +27,6 @@ import java.util.Date;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
-@Category(NotSelfContained.class)
 public class ElasticSearchIT extends AbstractSeedIT {
     @Inject
     @Named("client1")

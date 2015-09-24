@@ -11,6 +11,7 @@ package org.seedstack.seed.persistence.elasticsearch.internal;
 
 import io.nuun.kernel.api.Plugin;
 import io.nuun.kernel.api.plugin.InitState;
+import io.nuun.kernel.api.plugin.PluginException;
 import io.nuun.kernel.api.plugin.context.Context;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.core.AbstractPlugin;
@@ -28,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -73,7 +75,11 @@ public class ElasticSearchPlugin extends AbstractPlugin {
                 }
 
                 if (!propertiesMap.containsKey("path.home")) {
-                    propertiesMap.put("path.home", applicationPlugin.getApplication().getStorageLocation(ElasticSearchPlugin.ELASTIC_SEARCH_STORAGE_ROOT + elasticSearchClientName).getAbsolutePath());
+                    try {
+                        propertiesMap.put("path.home", applicationPlugin.getApplication().getStorageLocation(ElasticSearchPlugin.ELASTIC_SEARCH_STORAGE_ROOT + elasticSearchClientName).getAbsolutePath());
+                    } catch (IOException e) {
+                        throw new PluginException("Unable to access application storage", e);
+                    }
                 }
 
                 String[] hosts = elasticSearchClientConfiguration.getStringArray("hosts");
