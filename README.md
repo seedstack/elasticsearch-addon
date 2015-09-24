@@ -1,6 +1,6 @@
 # SeedStack ElasticSearch add-on
 
-[![Build status](https://travis-ci.org/seedstack/elasticsearch-addon.svg?branch=master)](https://travis-ci.org/seedstack/elasticsearch-addon) [![Coverage Status](https://coveralls.io/repos/seedstack/elasticsearch-addon/badge.svg?branch=master)](https://coveralls.io/r/seedstack/elasticsearch-addon?branch=master) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.seedstack.addons/seed-elasticsearch/badge.svg?style=flat)](https://maven-badges.herokuapp.com/maven-central/org.seedstack.addons/seed-elasticsearch)
+[![Build status](https://travis-ci.org/seedstack/elasticsearch-addon.svg?branch=master)](https://travis-ci.org/seedstack/elasticsearch-addon) [![Coverage Status](https://coveralls.io/repos/seedstack/elasticsearch-addon/badge.svg?branch=master)](https://coveralls.io/r/seedstack/elasticsearch-addon?branch=master) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.seedstack/seed-elasticsearch/badge.svg?style=flat)](https://maven-badges.herokuapp.com/maven-central/org.seedstack/seed-elasticsearch)
 
 ElasticSearch official persistence integration for SeedStack.
 
