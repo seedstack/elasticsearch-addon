@@ -16,8 +16,8 @@ Add it to your application with
 the following Maven dependency:
 
     <dependency>
-        <groupId>org.seedstack</groupId>
-        <artifactId>seed-elasticsearch</artifactId>
+        <groupId>org.seedstack.addons</groupId>
+        <artifactId>elasticsearch</artifactId>
     </dependency>
 
 Main features:
