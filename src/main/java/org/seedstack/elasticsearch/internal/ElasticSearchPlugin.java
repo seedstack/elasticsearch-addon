@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.persistence.elasticsearch.internal;
+package org.seedstack.elasticsearch.internal;
 
 import io.nuun.kernel.api.Plugin;
 import io.nuun.kernel.api.plugin.InitState;
@@ -20,7 +20,7 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
-import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.application.ApplicationPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +40,7 @@ import java.util.Map.Entry;
  * @author redouane.loulou@ext.mpsa.com
  */
 public class ElasticSearchPlugin extends AbstractPlugin {
-    public static final String ELASTIC_SEARCH_PLUGIN_CONFIGURATION_PREFIX = "org.seedstack.seed.persistence.elasticsearch";
+    public static final String ELASTIC_SEARCH_PLUGIN_CONFIGURATION_PREFIX = "org.seedstack.elasticsearch";
     public static final int DEFAULT_ELASTIC_SEARCH_PORT = 9300;
     public static final String ELASTIC_SEARCH_STORAGE_ROOT = "persistence-elasticsearch" + File.separator;
     private static final Logger LOGGER = LoggerFactory.getLogger(ElasticSearchPlugin.class);
@@ -50,7 +50,7 @@ public class ElasticSearchPlugin extends AbstractPlugin {
 
     @Override
     public String name() {
-        return "seed-elasticsearch-plugin";
+        return "elasticsearch";
     }
 
     @Override

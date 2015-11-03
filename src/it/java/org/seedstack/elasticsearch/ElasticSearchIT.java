@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.persistence.elasticsearch;
+package org.seedstack.elasticsearch;
 
 import org.assertj.core.api.Assertions;
 import org.elasticsearch.ElasticsearchException;
@@ -14,7 +14,7 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.json.JSONException;
 import org.junit.Test;
-import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.it.AbstractSeedIT;
 import org.skyscreamer.jsonassert.JSONAssert;
 
