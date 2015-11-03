@@ -8,9 +8,9 @@
 /**
  *
  */
-package org.seedstack.seed.persistence.elasticsearch.internal;
+package org.seedstack.elasticsearch.internal;
 
-import org.seedstack.seed.core.api.ErrorCode;
+import org.seedstack.seed.ErrorCode;
 
 enum ElasticSearchErrorCode implements ErrorCode {
     FORBIDDEN_CLIENT_CLOSE,

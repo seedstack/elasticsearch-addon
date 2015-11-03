@@ -6,9 +6,9 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 
-[org.seedstack.seed]
-persistence.elasticsearch.clients = client1, client2
+[org.seedstack.elasticsearch]
+clients = client1, client2
 
-[org.seedstack.seed.persistence.elasticsearch.client.client1]
+[org.seedstack.elasticsearch.client.client1]
 hosts = localhost
 
