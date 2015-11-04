@@ -12,7 +12,7 @@ menu:
 
 The ElasticSearch add-on allows you to configure, inject and use [ElasticSearch](https://www.elastic.co) clients.
 
-{{< dependency "org.seedstack.addons" "elasticsearch" >}}
+{{< dependency "org.seedstack.addons.elasticsearch" "elasticsearch" >}}
 
 Main features:
 
