@@ -7,7 +7,7 @@
  */
 package org.seedstack.elasticsearch.internal;
 
-import io.nuun.kernel.api.Plugin;
+import com.google.common.collect.Lists;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.Context;
 import io.nuun.kernel.api.plugin.context.InitContext;
@@ -26,12 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 /**
@@ -55,7 +50,7 @@ public class ElasticSearchPlugin extends AbstractPlugin {
 
     @Override
     public InitState init(InitContext initContext) {
-        ApplicationPlugin applicationPlugin = (ApplicationPlugin) initContext.pluginsRequired().iterator().next();
+        ApplicationPlugin applicationPlugin = initContext.dependency(ApplicationPlugin.class);
         Configuration elasticSearchConfiguration = applicationPlugin.getApplication().getConfiguration().subset(ELASTIC_SEARCH_PLUGIN_CONFIGURATION_PREFIX);
 
         String[] elasticSearchClientNames = elasticSearchConfiguration.getStringArray("clients");
@@ -125,10 +120,8 @@ public class ElasticSearchPlugin extends AbstractPlugin {
     }
 
     @Override
-    public Collection<Class<? extends Plugin>> requiredPlugins() {
-        Collection<Class<? extends Plugin>> plugins = new ArrayList<Class<? extends Plugin>>();
-        plugins.add(ApplicationPlugin.class);
-        return plugins;
+    public Collection<Class<?>> requiredPlugins() {
+        return Lists.<Class<?>>newArrayList(ApplicationPlugin.class);
     }
 
     @Override
