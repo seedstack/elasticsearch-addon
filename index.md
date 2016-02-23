@@ -1,11 +1,20 @@
 ---
-title: "Overview"
-addon: "ElasticSearch"
+title: "Basics"
+name: "ElasticSearch"
 repo: "https://github.com/seedstack/elasticsearch-addon"
 author: "SeedStack"
 description: "Integrates ElasticSearch indexing solution with SeedStack."
 min-version: "15.11+"
 backend: true
+weight: -1
+tags:
+    - "persistence"
+    - "indexing"
+    - "elastic"
+    - "search"
+    - "data"
+zones:
+    - Addons
 menu:
     ElasticSearchAddon:
         weight: 10
