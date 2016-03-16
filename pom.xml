@@ -22,7 +22,7 @@
     <version>2.1.1-SNAPSHOT</version>
 
     <properties>
-        <seed.version>2.1.0</seed.version>
+        <seed.version>2.3.0-SNAPSHOT</seed.version>
 
         <compatibility.version>2.1.0</compatibility.version>
     </properties>
