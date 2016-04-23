@@ -2,9 +2,9 @@
 title: "Basics"
 name: "ElasticSearch"
 repo: "https://github.com/seedstack/elasticsearch-addon"
-author: "SeedStack"
+date: 2015-11-17
+author: Redouane LOULOU
 description: "Integrates ElasticSearch indexing solution with SeedStack."
-min-version: "15.11+"
 backend: true
 weight: -1
 tags:
