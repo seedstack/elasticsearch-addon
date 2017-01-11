@@ -1,3 +1,8 @@
+# Version 3.0.0 (2017-01-11)
+
+* [brk] Update to new configuration system.
+* [brk] Embedded node support has been dropped since it is no longer properly supported by ElasticSearch.
+
 # Version 2.1.1 (2016-04-26)
 
 * [chg] Update for SeedStack 16.4

@@ -30,19 +30,9 @@ public class ElasticSearchIT extends AbstractSeedIT {
     @Named("client1")
     Client remoteClient;
 
-    @Inject
-    @Named("client2")
-    Client inMemoryClient;
-
     @Test
     public void clients_are_injectable() {
         Assertions.assertThat(remoteClient).isNotNull();
-        Assertions.assertThat(inMemoryClient).isNotNull();
-    }
-
-    @Test(expected = SeedException.class)
-    public void assert_inmemory_client_close_exception() {
-        inMemoryClient.close();
     }
 
     @Test(expected = SeedException.class)
@@ -53,11 +43,6 @@ public class ElasticSearchIT extends AbstractSeedIT {
     @Test
     public void remote_indexing_and_searching() throws ElasticsearchException, IOException, JSONException {
         indexing_and_searching(remoteClient);
-    }
-
-    @Test
-    public void inmemory_indexing_and_searching() throws ElasticsearchException, IOException, JSONException {
-        indexing_and_searching(inMemoryClient);
     }
 
     public void indexing_and_searching(Client client) throws ElasticsearchException, IOException, JSONException {

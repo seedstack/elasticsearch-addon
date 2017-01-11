@@ -10,10 +10,11 @@
  */
 package org.seedstack.elasticsearch.internal;
 
-import org.seedstack.seed.ErrorCode;
+import org.seedstack.shed.exception.ErrorCode;
 
 enum ElasticSearchErrorCode implements ErrorCode {
     FORBIDDEN_CLIENT_CLOSE,
-    CLIENT_INVALID_PORT,
-    INVALID_HOST
+    INVALID_HOST,
+    INVALID_PORT,
+    UNKNOWN_HOST
 }

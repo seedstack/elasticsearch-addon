@@ -7,41 +7,33 @@
  */
 package org.seedstack.elasticsearch.internal;
 
-import com.google.common.collect.Lists;
 import io.nuun.kernel.api.plugin.InitState;
-import io.nuun.kernel.api.plugin.context.Context;
 import io.nuun.kernel.api.plugin.context.InitContext;
-import io.nuun.kernel.core.AbstractPlugin;
-import org.apache.commons.configuration.Configuration;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
-import org.elasticsearch.node.Node;
-import org.elasticsearch.node.NodeBuilder;
+import org.elasticsearch.transport.client.PreBuiltTransportClient;
+import org.seedstack.elasticsearch.ElasticSearchConfig;
 import org.seedstack.seed.SeedException;
-import org.seedstack.seed.core.internal.application.ApplicationPlugin;
+import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.util.*;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 /**
  * This plugin manages clients used to access ElasticSearch instances.
- *
- * @author redouane.loulou@ext.mpsa.com
  */
-public class ElasticSearchPlugin extends AbstractPlugin {
-    public static final String ELASTIC_SEARCH_PLUGIN_CONFIGURATION_PREFIX = "org.seedstack.elasticsearch";
-    public static final int DEFAULT_ELASTIC_SEARCH_PORT = 9300;
-    public static final String ELASTIC_SEARCH_STORAGE_ROOT = "persistence-elasticsearch" + File.separator;
+public class ElasticSearchPlugin extends AbstractSeedPlugin {
+    private static final int DEFAULT_ELASTIC_SEARCH_PORT = 9300;
     private static final Logger LOGGER = LoggerFactory.getLogger(ElasticSearchPlugin.class);
-
-    private final Map<String, Client> elasticSearchClients = new HashMap<String, Client>();
-    private final Map<String, Node> elasticSearchLocalNodes = new HashMap<String, Node>();
+    private final Map<String, Client> elasticSearchClients = new HashMap<>();
 
     @Override
     public String name() {
@@ -49,40 +41,18 @@ public class ElasticSearchPlugin extends AbstractPlugin {
     }
 
     @Override
-    public InitState init(InitContext initContext) {
-        ApplicationPlugin applicationPlugin = initContext.dependency(ApplicationPlugin.class);
-        Configuration elasticSearchConfiguration = applicationPlugin.getApplication().getConfiguration().subset(ELASTIC_SEARCH_PLUGIN_CONFIGURATION_PREFIX);
+    public InitState initialize(InitContext initContext) {
+        ElasticSearchConfig elasticSearchConfig = getConfiguration(ElasticSearchConfig.class);
 
-        String[] elasticSearchClientNames = elasticSearchConfiguration.getStringArray("clients");
-        if (elasticSearchClientNames != null && elasticSearchClientNames.length > 0) {
-            for (String elasticSearchClientName : elasticSearchClientNames) {
-                Configuration elasticSearchClientConfiguration = elasticSearchConfiguration.subset("client." + elasticSearchClientName);
+        if (!elasticSearchConfig.getClients().isEmpty()) {
+            for (Entry<String, ElasticSearchConfig.ClientConfig> clientEntry : elasticSearchConfig.getClients().entrySet()) {
+                String clientName = clientEntry.getKey();
+                ElasticSearchConfig.ClientConfig clientConfig = clientEntry.getValue();
 
-                Iterator<String> it = elasticSearchClientConfiguration.getKeys("property");
-                Map<String, String> propertiesMap = new HashMap<String, String>();
-                while (it.hasNext()) {
-                    String name = it.next();
-                    propertiesMap.put(name.substring(9), elasticSearchClientConfiguration.getString(name));
-                }
-
-                if (!propertiesMap.containsKey("path.home")) {
-                    propertiesMap.put("path.home", applicationPlugin.getApplication().getStorageLocation(ElasticSearchPlugin.ELASTIC_SEARCH_STORAGE_ROOT + elasticSearchClientName).getAbsolutePath());
-                }
-
-                String[] hosts = elasticSearchClientConfiguration.getStringArray("hosts");
-                if (hosts == null || hosts.length == 0) {
-                    LOGGER.info("Creating ElasticSearch client {} on its local node", elasticSearchClientName);
-
-                    Node node = buildLocalNode(buildSettings(propertiesMap));
-                    elasticSearchLocalNodes.put(elasticSearchClientName, node);
-                    elasticSearchClients.put(elasticSearchClientName, node.client());
-                } else {
-                    LOGGER.info("Creating ElasticSearch client {} for remote instance at {}", elasticSearchClientName, Arrays.toString(hosts));
-
-                    elasticSearchClients.put(elasticSearchClientName, buildRemoteClient(buildSettings(propertiesMap), hosts));
-                }
+                List<String> hosts = clientConfig.getHosts();
+                LOGGER.info("Creating ElasticSearch client {} for remote instance at {}", clientName, hosts);
+                elasticSearchClients.put(clientName, buildRemoteClient(clientName, clientConfig));
             }
-
         } else {
             LOGGER.info("No ElasticSearch client configured, ElasticSearch support disabled");
         }
@@ -91,11 +61,8 @@ public class ElasticSearchPlugin extends AbstractPlugin {
     }
 
     @Override
-    public void start(Context context) {
-        for (Entry<String, Node> entry : elasticSearchLocalNodes.entrySet()) {
-            LOGGER.info("Starting ElasticSearch local node {}", entry.getKey());
-            entry.getValue().start();
-        }
+    public Object nativeUnitModule() {
+        return new ElasticSearchModule(elasticSearchClients);
     }
 
     @Override
@@ -108,43 +75,20 @@ public class ElasticSearchPlugin extends AbstractPlugin {
                 LOGGER.error(String.format("Unable to properly close ElasticSearch client %s", entry.getKey()), e);
             }
         }
-
-        for (Entry<String, Node> entry : elasticSearchLocalNodes.entrySet()) {
-            LOGGER.info("Closing ElasticSearch local node {}", entry.getKey());
-            try {
-                entry.getValue().close();
-            } catch (Exception e) {
-                LOGGER.error(String.format("Unable to properly close ElasticSearch local node %s", entry.getKey()), e);
-            }
-        }
     }
 
-    @Override
-    public Collection<Class<?>> requiredPlugins() {
-        return Lists.<Class<?>>newArrayList(ApplicationPlugin.class);
-    }
+    private Client buildRemoteClient(String clientName, ElasticSearchConfig.ClientConfig clientConfig) {
+        Settings.Builder settingsBuilder = Settings.builder();
+        settingsBuilder.put(clientConfig.getProperties());
 
-    @Override
-    public Object nativeUnitModule() {
-        return new ElasticSearchModule(elasticSearchClients);
-    }
+        TransportClient transportClient = new PreBuiltTransportClient(settingsBuilder.build(), clientConfig.getPlugins());
 
-    private Node buildLocalNode(Settings settings) {
-        NodeBuilder nodeBuilder = NodeBuilder.nodeBuilder();
-        nodeBuilder.settings(settings);
-        nodeBuilder.local(true);
-        nodeBuilder.loadConfigSettings(false);
-
-        return nodeBuilder.node();
-    }
-
-    private Client buildRemoteClient(Settings settings, String[] hosts) {
-        TransportClient transportClient = new TransportClient(settings, false);
-
-        for (String host : hosts) {
+        for (String host : clientConfig.getHosts()) {
             String[] hostInfo = host.split(":");
             if (hostInfo.length > 2) {
-                throw SeedException.createNew(ElasticSearchErrorCode.INVALID_HOST).put("host", host);
+                throw SeedException.createNew(ElasticSearchErrorCode.INVALID_HOST)
+                        .put("clientName", clientName)
+                        .put("host", host);
             }
             String address = hostInfo[0].trim();
             int port = DEFAULT_ELASTIC_SEARCH_PORT;
@@ -153,18 +97,19 @@ public class ElasticSearchPlugin extends AbstractPlugin {
                     port = Integer.valueOf(hostInfo[1]);
                 }
             } catch (NumberFormatException e) {
-                throw SeedException.wrap(e, ElasticSearchErrorCode.CLIENT_INVALID_PORT).put("host", hostInfo[0]);
+                throw SeedException.wrap(e, ElasticSearchErrorCode.INVALID_PORT)
+                        .put("clientName", clientName)
+                        .put("host", host)
+                        .put("port", hostInfo[1]);
             }
-
-            transportClient.addTransportAddress(new InetSocketTransportAddress(address, port));
+            try {
+                transportClient.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(address), port));
+            } catch (UnknownHostException e) {
+                throw SeedException.wrap(e, ElasticSearchErrorCode.UNKNOWN_HOST)
+                        .put("host", address);
+            }
         }
 
         return transportClient;
-    }
-
-    private Settings buildSettings(Map<String, String> settings) {
-        ImmutableSettings.Builder settingsBuilder = ImmutableSettings.settingsBuilder();
-        settingsBuilder.put(settings);
-        return settingsBuilder.build();
     }
 }

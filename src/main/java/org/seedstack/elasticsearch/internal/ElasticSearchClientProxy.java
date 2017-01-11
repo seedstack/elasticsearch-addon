@@ -18,8 +18,6 @@ import java.lang.reflect.Proxy;
 /**
  * ElasticSearch client proxy, forbid the use of the close method
  * Clients can only be closed by the plugin if managed by seed.
- *
- * @author redouane.loulou@ext.mpsa.com
  */
 final class ElasticSearchClientProxy implements InvocationHandler {
     private static final String METHOD_CLOSE = "close";
