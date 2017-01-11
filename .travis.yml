@@ -2,13 +2,24 @@ sudo: false
 
 language: java
 
-services: elasticsearch
-
 jdk: oraclejdk8
+
+addons:
+  apt:
+    sources:
+      - elasticsearch-2.x
+    packages:
+      - elasticsearch
 
 cache:
   directories:
     - "$HOME/.m2/repository"
+
+before_install:
+  - elasticsearch -d
+  - sleep 10
+  - elasticsearch -v
+  - curl http://localhost:9200/
 
 install:
   - echo "<settings><servers><server><id>bintray</id><username>\${env.BINTRAY_USER}</username><password>\${env.BINTRAY_KEY}</password></server></servers></settings>" > ~/.m2/settings.xml
