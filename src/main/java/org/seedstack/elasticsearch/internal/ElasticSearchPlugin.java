@@ -35,7 +35,7 @@ import java.util.Map.Entry;
  * This plugin manages clients used to access ElasticSearch instances.
  */
 public class ElasticSearchPlugin extends AbstractSeedPlugin {
-    private static final int DEFAULT_ELASTIC_SEARCH_PORT = 9200;
+    private static final int DEFAULT_ELASTIC_SEARCH_PORT = 9300;
     private static final Logger LOGGER = LoggerFactory.getLogger(ElasticSearchPlugin.class);
     private final Map<String, Client> elasticSearchClients = new HashMap<>();
 
