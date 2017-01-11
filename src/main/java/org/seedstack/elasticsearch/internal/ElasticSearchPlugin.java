@@ -13,15 +13,19 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
-import org.elasticsearch.transport.client.PreBuiltTransportClient;
+import org.elasticsearch.plugins.Plugin;
 import org.seedstack.elasticsearch.ElasticSearchConfig;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
+import org.seedstack.shed.reflect.Classes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +35,7 @@ import java.util.Map.Entry;
  * This plugin manages clients used to access ElasticSearch instances.
  */
 public class ElasticSearchPlugin extends AbstractSeedPlugin {
-    private static final int DEFAULT_ELASTIC_SEARCH_PORT = 9300;
+    private static final int DEFAULT_ELASTIC_SEARCH_PORT = 9200;
     private static final Logger LOGGER = LoggerFactory.getLogger(ElasticSearchPlugin.class);
     private final Map<String, Client> elasticSearchClients = new HashMap<>();
 
@@ -81,7 +85,9 @@ public class ElasticSearchPlugin extends AbstractSeedPlugin {
         Settings.Builder settingsBuilder = Settings.builder();
         settingsBuilder.put(clientConfig.getProperties());
 
-        TransportClient transportClient = new PreBuiltTransportClient(settingsBuilder.build(), clientConfig.getPlugins());
+        TransportClient transportClient = Classes.optional("org.elasticsearch.transport.client.PreBuiltTransportClient")
+                .map(preBuiltTransportClientClass -> createV5TransportClient(clientName, clientConfig, settingsBuilder.build()))
+                .orElseGet(() -> createV2TransportClient(clientName, clientConfig, settingsBuilder.build()));
 
         for (String host : clientConfig.getHosts()) {
             String[] hostInfo = host.split(":");
@@ -111,5 +117,33 @@ public class ElasticSearchPlugin extends AbstractSeedPlugin {
         }
 
         return transportClient;
+    }
+
+    private TransportClient createV2TransportClient(String clientName, ElasticSearchConfig.ClientConfig clientConfig, Settings settings) {
+        try {
+            Object builder = TransportClient.class.getMethod("builder").invoke(null);
+            Class<?> transportClientBuilderClass = Class.forName("org.elasticsearch.client.transport.TransportClient$Builder");
+            transportClientBuilderClass.getMethod("settings", Settings.class).invoke(builder, settings);
+            Method addPluginMethod = transportClientBuilderClass.getMethod("addPlugin", Class.class);
+            for (Class<? extends Plugin> pluginClass : clientConfig.getPlugins()) {
+                addPluginMethod.invoke(builder, pluginClass);
+            }
+            return (TransportClient) transportClientBuilderClass.getMethod("build").invoke(builder);
+        } catch (Exception e) {
+            throw SeedException.wrap(e, ElasticSearchErrorCode.CANNOT_CREATE_CLIENT)
+                    .put("clientName", clientName);
+        }
+
+    }
+
+    private TransportClient createV5TransportClient(String clientName, ElasticSearchConfig.ClientConfig clientConfig, Settings settings) {
+        try {
+            Class<?> preBuiltTransportClientClass = Class.forName("org.elasticsearch.transport.client.PreBuiltTransportClient");
+            Constructor<?> constructor = preBuiltTransportClientClass.getConstructor(Settings.class, Collection.class);
+            return (TransportClient) constructor.newInstance(settings, clientConfig.getPlugins());
+        } catch (Exception e) {
+            throw SeedException.wrap(e, ElasticSearchErrorCode.CANNOT_CREATE_CLIENT)
+                    .put("clientName", clientName);
+        }
     }
 }

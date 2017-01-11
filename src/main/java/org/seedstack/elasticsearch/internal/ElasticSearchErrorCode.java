@@ -16,5 +16,5 @@ enum ElasticSearchErrorCode implements ErrorCode {
     FORBIDDEN_CLIENT_CLOSE,
     INVALID_HOST,
     INVALID_PORT,
-    UNKNOWN_HOST
+    CANNOT_CREATE_CLIENT, UNKNOWN_HOST
 }
