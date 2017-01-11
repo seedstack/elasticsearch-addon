@@ -1,25 +1,16 @@
-sudo: false
+sudo: true
 
 language: java
 
 jdk: oraclejdk8
-
-addons:
-  apt:
-    sources:
-      - elasticsearch-2.x
-    packages:
-      - elasticsearch
 
 cache:
   directories:
     - "$HOME/.m2/repository"
 
 before_install:
-  - elasticsearch -d
-  - sleep 10
-  - elasticsearch -v
-  - curl http://localhost:9200/
+    - curl -O https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.1.1.deb && sudo dpkg -i --force-confnew elasticsearch-5.1.1.deb && sudo service elasticsearch start
+    - sleep 5
 
 install:
   - echo "<settings><servers><server><id>bintray</id><username>\${env.BINTRAY_USER}</username><password>\${env.BINTRAY_KEY}</password></server></servers></settings>" > ~/.m2/settings.xml
