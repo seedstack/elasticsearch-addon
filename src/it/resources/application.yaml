@@ -8,5 +8,4 @@
 
 elasticSearch:
   clients:
-    client1:
-      hosts: localhost
+    client1: localhost

@@ -10,6 +10,7 @@ package org.seedstack.elasticsearch;
 import org.elasticsearch.plugins.Plugin;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.seedstack.coffig.Config;
+import org.seedstack.coffig.SingleValue;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,6 +36,7 @@ public class ElasticSearchConfig {
 
     public static class ClientConfig {
         @NotEmpty
+        @SingleValue
         private List<String> hosts = new ArrayList<>();
         private Properties properties = new Properties();
         private Set<Class<? extends Plugin>> plugins = new HashSet<>();
