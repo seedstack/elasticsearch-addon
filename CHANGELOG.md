@@ -1,4 +1,4 @@
-# Version 3.0.0 (2017-01-11)
+# Version 3.0.0 (2017-01-13)
 
 * [brk] Update to new configuration system.
 * [brk] Embedded node support has been dropped since it is no longer properly supported by ElasticSearch.
