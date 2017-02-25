@@ -18,78 +18,65 @@ menu:
 
 The ElasticSearch add-on allows you to configure, inject and use [ElasticSearch](https://www.elastic.co) clients.
 
+# Dependency
+
 {{< dependency g="org.seedstack.addons.elasticsearch" a="elasticsearch" >}}
-
-Main features:
-
-* Embedded indexes,
-* Remote indexes.
-
-{{% callout info %}}
-More information about the ElasticSearch Java API [here](https://www.elastic.co/guide/en/elasticsearch/client/java-api/current/index.html)
-{{% /callout %}}
 
 # Configuration
 
-To access an ElasticSearch index, you need to declare a client in configuration. Multiple clients can be configured. They
-must be listed in the following property:
+To access an ElasticSearch index, you need to declare a client in configuration. Multiple clients can be configured:
 
-```ini
-org.seedstack.elasticsearch.clients = client1, client2, ...
+{{% config p="elasticSearch" %}}
+```yaml
+elasticSearch:
+  # Configured ElasticSearch clients with the client name as key
+  clients:
+    client1:
+      # List of hosts the client will connect to
+      hosts: (List<String>)
+      
+      # Properties used for client configuration
+      properties:
+        property1: value1
+        
+      # Set of ElasticSearch plugin classes to enable for this client  
+      plugins: Set<Class<? extends Plugin>>
 ```
-
-## Remote instance
-
-To access a remote ElasticSearch index, you need to specify the host(s) of one or more node(s) of the ElasticSearch
-cluster:
-
-```ini
-[org.seedstack.elasticsearch.client.client1]
-hosts = host1:port1, host2:port2, ...
-```
-
-You can omit the port in which case will be set to the ElasticSearch default (9300).
-
-## Embedded instance
-
-If you don't specify the `hosts` property, a local ElasticSearch node will be created and stored in the `persistence-elasticsearch/{client-name}`
-subdirectory of the Seed local storage location, where `{client-name}` is the name of the ElasticSearch client.
-
-## Other options
-
-You can specify any configuration property of the ElasticSearch client with the following syntax:
-
-```ini
-[org.seedstack.elasticsearch.client.client1]
-property.name.of.elasticsearch.property = value
-```
+{{% /config %}}
 
 # Usage
 
 To use a configured ElasticSearch client, simply inject it where needed:
 
 ```java
-@Inject
-@Named("client1")
-Client client1;
+public class SomeClass {
+    @Inject
+    @Named("client1")
+    private Client client1;
+}
 ```
+
+{{% callout ref %}}
+You can find more information about the ElasticSearch Java API [here](https://www.elastic.co/guide/en/elasticsearch/client/java-api/current/index.html).
+{{% /callout %}}
 
 # Example
 
-Configuration for an embedded ElasticSearch instance:
+Configuration for an ElasticSearch server on the same machine:
 
-```ini
-org.seedstack.elasticsearch.clients = test
-
-[org.seedstack.elasticsearch.client.test]
-property.cluster.name = test-cluster-1
+```yaml
+elasticSearch:
+  clients:
+    client1: localhost
 ```
 
-To inject this configured client, use the following syntax:
+This client is used like this:
 
-```ini
-@Inject
-@Named("test")
-Client testClient;
+```java
+public class SomeClass {
+    @Inject
+    @Named("client1")
+    private Client client1;
+}
 ```
 
