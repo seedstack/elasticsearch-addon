@@ -4,11 +4,7 @@ repo: "https://github.com/seedstack/elasticsearch-addon"
 author: Redouane LOULOU
 description: "Integrates ElasticSearch indexing solution with SeedStack."
 tags:
-    - "persistence"
-    - "indexing"
-    - "elastic"
-    - "search"
-    - "data"
+    - persistence
 zones:
     - Addons
 menu:
