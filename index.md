@@ -12,7 +12,7 @@ menu:
         weight: 10
 ---
 
-The ElasticSearch add-on allows you to configure, inject and use [ElasticSearch](https://www.elastic.co) clients.
+The ElasticSearch add-on allows you to configure, inject and use [ElasticSearch](https://www.elastic.co) clients.<!--more-->
 
 # Dependency
 
