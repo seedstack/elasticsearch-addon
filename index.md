@@ -1,5 +1,6 @@
 ---
 title: "ElasticSearch"
+addon: "ElasticSearch"
 repo: "https://github.com/seedstack/elasticsearch-addon"
 author: Redouane LOULOU
 description: "Integrates ElasticSearch indexing solution with SeedStack."
@@ -7,18 +8,16 @@ tags:
     - persistence
 zones:
     - Addons
-menu:
-    ElasticSearchAddon:
-        weight: 10
+noMenu: true    
 ---
 
 The ElasticSearch add-on allows you to configure, inject and use [ElasticSearch](https://www.elastic.co) clients.<!--more-->
 
-# Dependency
+## Dependency
 
 {{< dependency g="org.seedstack.addons.elasticsearch" a="elasticsearch" >}}
 
-# Configuration
+## Configuration
 
 To access an ElasticSearch index, you need to declare a client in configuration. Multiple clients can be configured:
 
@@ -40,7 +39,7 @@ elasticSearch:
 ```
 {{% /config %}}
 
-# Usage
+## Usage
 
 To use a configured ElasticSearch client, simply inject it where needed:
 
@@ -56,7 +55,7 @@ public class SomeClass {
 You can find more information about the ElasticSearch Java API [here](https://www.elastic.co/guide/en/elasticsearch/client/java-api/current/index.html).
 {{% /callout %}}
 
-# Example
+## Example
 
 Configuration for an ElasticSearch server on the same machine:
 
