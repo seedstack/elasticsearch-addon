@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2020, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -14,8 +14,9 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.json.JSONException;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.seedstack.seed.SeedException;
-import org.seedstack.seed.it.AbstractSeedIT;
+import org.seedstack.seed.testing.junit4.SeedITRunner;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import javax.inject.Inject;
@@ -25,7 +26,8 @@ import java.util.Date;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
-public class ElasticSearchIT extends AbstractSeedIT {
+@RunWith(SeedITRunner.class)
+public class ElasticSearchIT {
     @Inject
     @Named("client1")
     Client remoteClient;
