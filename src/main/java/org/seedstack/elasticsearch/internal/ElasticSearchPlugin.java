@@ -12,7 +12,6 @@ import io.nuun.kernel.api.plugin.context.InitContext;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.plugins.Plugin;
 import org.seedstack.elasticsearch.ElasticSearchConfig;
 import org.seedstack.seed.SeedException;
@@ -24,7 +23,6 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -83,11 +81,19 @@ public class ElasticSearchPlugin extends AbstractSeedPlugin {
 
     private Client buildRemoteClient(String clientName, ElasticSearchConfig.ClientConfig clientConfig) {
         Settings.Builder settingsBuilder = Settings.builder();
-        settingsBuilder.put(clientConfig.getProperties());
+        for ( Entry<Object, Object> entry: clientConfig.getProperties().entrySet() ) {
+            settingsBuilder.put((String) entry.getKey(), (String) entry.getValue());
+        }
 
-        TransportClient transportClient = Classes.optional("org.elasticsearch.transport.client.PreBuiltTransportClient")
-                .map(preBuiltTransportClientClass -> createV5TransportClient(clientName, clientConfig, settingsBuilder.build()))
-                .orElseGet(() -> createV2TransportClient(clientName, clientConfig, settingsBuilder.build()));
+        TransportClient transportClient = null;
+        if ( Classes.optional("org.elasticsearch.client.transport.TransportClient$Builder").isPresent() )  {
+            transportClient = createV2TransportClient(clientName, clientConfig, settingsBuilder.build());
+        } else if (Classes.optional("org.elasticsearch.transport.client.PreBuiltTransportClient").isPresent() ) {
+            transportClient =  createPreBuiltTransportClient(clientName, clientConfig, settingsBuilder.build());
+        } else {
+            throw SeedException.createNew(ElasticSearchErrorCode.NO_TRANSPORT_CLIENT_FOUND)
+                    .put("clientName", clientName);
+        }
 
         for (String host : clientConfig.getHosts()) {
             String[] hostInfo = host.split(":");
@@ -100,7 +106,7 @@ public class ElasticSearchPlugin extends AbstractSeedPlugin {
             int port = DEFAULT_ELASTIC_SEARCH_PORT;
             try {
                 if (hostInfo.length > 1) {
-                    port = Integer.valueOf(hostInfo[1]);
+                    port = Integer.parseInt(hostInfo[1]);
                 }
             } catch (NumberFormatException e) {
                 throw SeedException.wrap(e, ElasticSearchErrorCode.INVALID_PORT)
@@ -108,12 +114,7 @@ public class ElasticSearchPlugin extends AbstractSeedPlugin {
                         .put("host", host)
                         .put("port", hostInfo[1]);
             }
-            try {
-                transportClient.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(address), port));
-            } catch (UnknownHostException e) {
-                throw SeedException.wrap(e, ElasticSearchErrorCode.UNKNOWN_HOST)
-                        .put("host", address);
-            }
+            addTransportAddress(transportClient, address, port);
         }
 
         return transportClient;
@@ -133,10 +134,9 @@ public class ElasticSearchPlugin extends AbstractSeedPlugin {
             throw SeedException.wrap(e, ElasticSearchErrorCode.CANNOT_CREATE_CLIENT)
                     .put("clientName", clientName);
         }
-
     }
 
-    private TransportClient createV5TransportClient(String clientName, ElasticSearchConfig.ClientConfig clientConfig, Settings settings) {
+    private TransportClient createPreBuiltTransportClient(String clientName, ElasticSearchConfig.ClientConfig clientConfig, Settings settings) {
         try {
             Class<?> preBuiltTransportClientClass = Class.forName("org.elasticsearch.transport.client.PreBuiltTransportClient");
             Constructor<?> constructor = preBuiltTransportClientClass.getConstructor(Settings.class, Collection.class);
@@ -144,6 +144,20 @@ public class ElasticSearchPlugin extends AbstractSeedPlugin {
         } catch (Exception e) {
             throw SeedException.wrap(e, ElasticSearchErrorCode.CANNOT_CREATE_CLIENT)
                     .put("clientName", clientName);
+        }
+    }
+
+    private void addTransportAddress(TransportClient transportClient, String address, int port) throws SeedException {
+        try {
+            Class<?> transportAddressClass = Classes.optional("org.elasticsearch.common.transport.InetSocketTransportAddress")
+            .orElse((Class<Object>) Class.forName("org.elasticsearch.common.transport.TransportAddress"));
+
+            Constructor<?> transportAddressClassConstructor = transportAddressClass.getConstructor(InetAddress.class, Integer.TYPE);
+            Method addTransportAddressMethod = transportClient.getClass().getMethod("addTransportAddress", Class.forName("org.elasticsearch.common.transport.TransportAddress"));
+            addTransportAddressMethod.invoke(transportClient, transportAddressClassConstructor.newInstance(InetAddress.getByName(address), port));
+        } catch (Exception e) {
+                throw SeedException.wrap(e, ElasticSearchErrorCode.CANNOT_CREATE_ADDRESS)
+                        .put("AddressType", "InetSocketTransportAddress");
         }
     }
 }

@@ -1,6 +1,7 @@
-# Version 3.1.0 (2020-10-01)
+# Version 3.1.0 (2020-10-29)
 
 * [chg] Update for SeedStack 20.7
+* [chg] Compatibility with transport client from elasticsearch v2 to v7
 
 # Version 3.0.0 (2017-01-13)
 
