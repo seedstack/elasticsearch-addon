@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2020, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -16,5 +16,7 @@ enum ElasticSearchErrorCode implements ErrorCode {
     FORBIDDEN_CLIENT_CLOSE,
     INVALID_HOST,
     INVALID_PORT,
-    CANNOT_CREATE_CLIENT, UNKNOWN_HOST
+    CANNOT_CREATE_CLIENT, UNKNOWN_HOST,
+    NO_TRANSPORT_CLIENT_FOUND,
+    CANNOT_CREATE_ADDRESS;
 }

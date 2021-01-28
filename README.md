@@ -4,6 +4,18 @@
 
 ElasticSearch official persistence integration for SeedStack.
 
+This addon provides a transport client compatible with elasticsearch from v2 to v7.
+
+It has been tested against following elasticsearch servers:
+
+- 2.4.6
+- 5.6.2
+- 6.8.10
+- 7.9.1
+
+Profiles have added in order to help build the addon with various elasticsearch jar versions. 
+By default, Profile v2 is used in travis build configuration. 
+
 # Copyright and license
 
 This source code is copyrighted by [The SeedStack Authors](https://github.com/seedstack/seedstack/blob/master/AUTHORS) and
