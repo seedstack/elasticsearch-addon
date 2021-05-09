@@ -9,14 +9,15 @@ cache:
     - "$HOME/.m2/repository"
 
 before_install:
-    - curl -O https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/2.4.3/elasticsearch-2.4.3.deb && sudo dpkg -i --force-confnew elasticsearch-2.4.3.deb && sudo service elasticsearch start
-    - sleep 5
+  - gpg --fast-import gpg.asc
+  - curl -O https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/2.4.3/elasticsearch-2.4.3.deb && sudo dpkg -i --force-confnew elasticsearch-2.4.3.deb && sudo service elasticsearch start
+  - sleep 5
 
 install:
-  - echo "<settings><servers><server><id>bintray</id><username>\${env.BINTRAY_USER}</username><password>\${env.BINTRAY_KEY}</password></server></servers></settings>" > ~/.m2/settings.xml
-  - if [[ $TRAVIS_PULL_REQUEST = false ]] && [[ $TRAVIS_BRANCH = master ]] || [[ $TRAVIS_TAG = v* ]]; then GOAL=deploy; else GOAL=install; fi
-  - if [[ $TRAVIS_TAG = v* ]]; then ADDITIONAL_PROFILES=release; mvn -q -U org.seedstack:seedstack-maven-plugin:release; else ADDITIONAL_PROFILES=snapshots; fi
+  - echo "<settings><servers><server><id>ossrh</id><username>\${env.SONATYPE_USER}</username><password>\${env.SONATYPE_PASSWORD}</password></server></servers></settings>" > ~/.m2/settings.xml
+  - if [[ $TRAVIS_PULL_REQUEST = false ]] && [[ $TRAVIS_BRANCH = master || $TRAVIS_BRANCH = dev-* ]] || [[ $TRAVIS_TAG = v* ]]; then GOAL=deploy; else GOAL=install; fi
+  - if [[ $TRAVIS_TAG = v* ]]; then ADDITIONAL_PROFILES=release; mvn -q -U org.seedstack:seedstack-maven-plugin:release; fi
 
-script: mvn -q -U -T 2 -Pbuild-number,compatibility,bintray,javadoc,v2,$ADDITIONAL_PROFILES $GOAL jacoco:report
+script: mvn -U -Pbuild-number,compatibility,javadoc,v2,$ADDITIONAL_PROFILES $GOAL jacoco:report
 
 after_success: mvn -q coveralls:report -DrepoToken=$COVERALLS_TOKEN
