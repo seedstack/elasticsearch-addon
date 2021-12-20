@@ -142,7 +142,7 @@
                 <dependency>
                     <groupId>org.elasticsearch</groupId>
                     <artifactId>elasticsearch</artifactId>
-                    <version>2.4.3</version>
+                    <version>6.8.17</version>
                     <scope>provided</scope>
                 </dependency>
             </dependencies>
@@ -156,7 +156,7 @@
                 <dependency>
                     <groupId>org.elasticsearch</groupId>
                     <artifactId>elasticsearch</artifactId>
-                    <version>5.6.16</version>
+                    <version>6.8.17</version>
                     <scope>provided</scope>
                 </dependency>
                 <dependency>
@@ -188,7 +188,7 @@
                 <dependency>
                     <groupId>org.elasticsearch</groupId>
                     <artifactId>elasticsearch</artifactId>
-                    <version>6.0.1</version>
+                    <version>6.8.17</version>
                     <scope>provided</scope>
                 </dependency>
                 <dependency>
@@ -220,7 +220,7 @@
                 <dependency>
                     <groupId>org.elasticsearch</groupId>
                     <artifactId>elasticsearch</artifactId>
-                    <version>6.8.10</version>
+                    <version>6.8.17</version>
                     <scope>provided</scope>
                 </dependency>
                 <dependency>
@@ -252,7 +252,7 @@
                 <dependency>
                     <groupId>org.elasticsearch</groupId>
                     <artifactId>elasticsearch</artifactId>
-                    <version>7.9.0</version>
+                    <version>6.8.17</version>
                     <scope>provided</scope>
                 </dependency>
                 <dependency>
