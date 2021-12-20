@@ -1,3 +1,7 @@
+# Version 3.1.1 (2021-12-20)
+
+* [chg] Upgrade log4j dependency to 2.17.0 (was and still is only with `provided` scope).
+
 # Version 3.1.0 (2021-05-09)
 
 * [chg] Compatibility with transport client from elasticsearch v2 to v7
